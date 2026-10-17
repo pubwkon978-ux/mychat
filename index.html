@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Chat</title>
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<meta name="theme-color" content="#4a0a52">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --rose:#ff2d5f; --pink:#ff4f93; --blush:#ffe3f0; --plum:#2a0a45; --plum2:#3d0f5c; --wine:#6b0f3f;
+  --ink:#40102f; --tick:#9af3ff;
+  --font:'Nunito',system-ui,sans-serif; --script:'Pacifico','Brush Script MT',cursive;
+  --heartbg:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cpath d='M30 44c-8-6-14-11-14-18a8 8 0 0 1 14-5 8 8 0 0 1 14 5c0 7-6 12-14 18z' fill='%23ff4d8d' fill-opacity='.08'/%3E%3Cpath d='M92 100c-6-4-10-8-10-13a6 6 0 0 1 10-4 6 6 0 0 1 10 4c0 5-4 9-10 13z' fill='%23ff4d8d' fill-opacity='.06'/%3E%3C/svg%3E");
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--plum);color:#fff;overflow:hidden}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--tick);outline-offset:2px}
+.hidden{display:none!important}
+
+/* ---------- login ---------- */
+#login{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;text-align:center;
+  background:radial-gradient(120% 90% at 0% 0%,#ff2d5f 0%,#a30a52 38%,#4a0a6a 72%,#2a0a55 100%)}
+#login::before{content:"";position:absolute;inset:0;background:var(--heartbg);background-size:120px;opacity:.9;pointer-events:none}
+#login>*{position:relative}
+#login img{width:132px;height:132px;border-radius:30px;box-shadow:0 18px 50px rgba(20,0,40,.55)}
+#login h1{font-family:var(--script);font-weight:400;font-size:44px;line-height:1.1}
+#login p{max-width:300px;opacity:.88;line-height:1.5}
+#gbtn{display:flex;align-items:center;gap:12px;background:#fff;color:#3c1030;font-weight:700;padding:13px 22px;border-radius:999px;box-shadow:0 10px 30px rgba(20,0,40,.4);transition:transform .15s}
+#gbtn:active{transform:scale(.97)}
+#gbtn svg{width:22px;height:22px}
+#loginErr{max-width:320px;font-size:14px;color:#ffd1dc;min-height:20px}
+
+/* ---------- app shell ---------- */
+#app{position:fixed;inset:0;display:flex;height:100dvh}
+.side{width:380px;max-width:100%;flex:none;display:flex;flex-direction:column;background:var(--plum);border-right:1px solid rgba(255,255,255,.08)}
+.sidehead{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top)) 14px 12px;background:linear-gradient(100deg,#c4124f,#6a0f6b)}
+.sidehead .me{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.sidehead .brand{font-family:var(--script);font-size:24px;line-height:1.1;white-space:nowrap}
+.sidehead .myname{font-size:12px;opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.iconbtn{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;transition:background .15s}
+.iconbtn:hover{background:rgba(255,255,255,.16)}
+.iconbtn svg{width:22px;height:22px}
+.searchbox{padding:10px 14px}
+.searchbox input{width:100%;border:0;border-radius:999px;padding:11px 16px;background:rgba(255,255,255,.09);color:#fff;font:inherit;font-size:15px}
+.searchbox input::placeholder{color:rgba(255,255,255,.5)}
+#list{flex:1;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom)}
+.item{display:flex;align-items:center;gap:12px;width:100%;padding:11px 14px;text-align:left;border-bottom:1px solid rgba(255,255,255,.05);transition:background .15s}
+.item:hover{background:rgba(255,255,255,.06)}
+.item.active{background:rgba(255,79,147,.22)}
+.item .mid{flex:1;min-width:0}
+.item .top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.item .nm{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .tm{font-size:12px;opacity:.6;white-space:nowrap}
+.item .tm.un{color:#ff8fb8;opacity:1;font-weight:700}
+.item .bot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:2px}
+.item .pv{font-size:14px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:4px}
+.badge{min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:linear-gradient(135deg,var(--rose),var(--pink));font-size:12px;font-weight:700;display:grid;place-items:center}
+.listempty{padding:40px 24px;text-align:center;opacity:.65;line-height:1.5}
+
+.av{position:relative;flex:none;border-radius:50%;background:linear-gradient(135deg,var(--rose),#8a2be2);display:grid;place-items:center;font-weight:700;overflow:visible}
+.av img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.av .dot{position:absolute;right:0;bottom:0;width:30%;height:30%;min-width:10px;min-height:10px;border-radius:50%;background:#3ee58f;border:2px solid var(--plum)}
+
+/* ---------- chat pane ---------- */
+.chat{flex:1;min-width:0;display:flex;flex-direction:column;background:#2b0b3d var(--heartbg);position:relative}
+.chat .empty{margin:auto;text-align:center;padding:24px;opacity:.9}
+.chat .empty img{width:96px;height:96px;border-radius:24px;opacity:.95;box-shadow:0 12px 36px rgba(0,0,0,.4)}
+.chat .empty h2{font-family:var(--script);font-weight:400;font-size:28px;margin:16px 0 6px}
+.chat .empty p{opacity:.75}
+.chathead{display:flex;align-items:center;gap:12px;padding:calc(10px + env(safe-area-inset-top)) 12px 10px 8px;background:linear-gradient(100deg,#c4124f,#6a0f6b);box-shadow:0 4px 18px rgba(10,0,30,.35);z-index:2}
+.chathead .back{display:none}
+.chathead .who{min-width:0}
+.chathead .who b{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chathead .who small{font-size:12.5px;opacity:.85}
+#msgs{flex:1;overflow-y:auto;padding:14px 12px 8px;display:flex;flex-direction:column;gap:3px;scroll-behavior:smooth}
+.day{align-self:center;margin:10px 0 6px;padding:4px 14px;border-radius:999px;background:rgba(255,255,255,.12);font-size:12px}
+.row{display:flex;flex-direction:column;max-width:78%}
+.row.mine{align-self:flex-end;align-items:flex-end}
+.row.theirs{align-self:flex-start;align-items:flex-start}
+.bub{padding:8px 12px 6px;border-radius:18px;line-height:1.38;font-size:15.5px;word-wrap:break-word;overflow-wrap:anywhere;white-space:pre-wrap;box-shadow:0 2px 6px rgba(10,0,30,.25)}
+.mine .bub{background:linear-gradient(135deg,#ff3d78,#e0185f);border-bottom-right-radius:5px}
+.theirs .bub{background:#fff0f7;color:var(--ink);border-bottom-left-radius:5px}
+.bub .meta{float:right;margin:7px 0 -3px 12px;display:flex;align-items:center;gap:4px;font-size:11px;opacity:.78;line-height:1;user-select:none}
+.tick{display:inline-flex;color:rgba(255,255,255,.85)}
+.tick svg{width:17px;height:12px}
+.tick.seen{color:var(--tick)}
+.seenlbl{font-size:11.5px;margin:2px 4px 4px;color:var(--tick);opacity:.95}
+
+.composer{display:flex;align-items:flex-end;gap:10px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(26,4,44,.92)}
+.composer textarea{flex:1;resize:none;border:0;border-radius:22px;padding:12px 18px;max-height:120px;height:44px;font:inherit;font-size:16px;line-height:1.3;background:rgba(255,255,255,.1);color:#fff}
+.composer textarea::placeholder{color:rgba(255,255,255,.5)}
+.sendbtn{width:46px;height:46px;border-radius:50%;flex:none;display:grid;place-items:center;background:linear-gradient(135deg,var(--rose),var(--pink));box-shadow:0 6px 18px rgba(255,45,95,.45);transition:transform .12s}
+.sendbtn:active{transform:scale(.92)}
+.sendbtn svg{width:22px;height:22px;margin-left:2px}
+
+@media (max-width:760px){
+  .side{width:100%}
+  .chat{position:absolute;inset:0;transform:translateX(100%);transition:transform .25s ease;z-index:5}
+  #app.chat-open .chat{transform:none}
+  .chathead .back{display:grid}
+  .row{max-width:86%}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="hidden">
+  <img src="icon.png" alt="My Chat">
+  <h1>My Chat</h1>
+  <p>Chat with the people you love, in realtime.</p>
+  <button id="gbtn" type="button">
+    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.5 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.2.8-4.7l-7.9-6.1C.9 16.4 0 20.100 0 24s.9 7.600 2.600 10.800l7.900-6.100z"/><path fill="#34A853" d="M24 48c6.500 0 11.900-2.100 15.900-5.800l-7.500-5.800c-2.100 1.400-4.800 2.300-8.400 2.300-6.300 0-11.600-4.100-13.500-9.800l-7.900 6.100C6.500 42.600 14.600 48 24 48z"/></svg>
+    Continue with Google
+  </button>
+  <div id="loginErr" role="alert"></div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+  <aside class="side">
+    <div class="sidehead">
+      <div class="me"><span id="meAv"></span><div style="min-width:0"><div class="brand">My Chat</div><div class="myname" id="meName"></div></div></div>
+      <button class="iconbtn" id="logout" title="Log out" aria-label="Log out">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      </button>
+    </div>
+    <div class="searchbox"><input id="search" type="search" placeholder="Search members" autocomplete="off"></div>
+    <div id="list"></div>
+  </aside>
+
+  <main class="chat">
+    <div class="empty" id="noChat">
+      <img src="icon.png" alt="">
+      <h2>My Chat</h2>
+      <p>Pick a member to start chatting.</p>
+    </div>
+    <div id="chatPane" class="hidden" style="display:flex;flex-direction:column;flex:1;min-height:0">
+      <div class="chathead">
+        <button class="iconbtn back" id="back" aria-label="Back to members">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <span id="peerAv"></span>
+        <div class="who"><b id="peerName"></b><small id="peerStatus"></small></div>
+      </div>
+      <div id="msgs"></div>
+      <div class="composer">
+        <textarea id="inp" rows="1" placeholder="Type a message" aria-label="Message"></textarea>
+        <button class="sendbtn" id="send" aria-label="Send">
+          <svg viewBox="0 0 24 24" fill="#fff"><path d="M3.4 20.4l17.5-7.5a1 1 0 0 0 0-1.8L3.4 3.6a1 1 0 0 0-1.400 1.200L4.500 11l9 1-9 1-2.500 6.200a1 1 0 0 0 1.400 1.200z"/></svg>
+        </button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getDatabase, ref, set, update, push, onValue, onChildAdded, onChildChanged, query, limitToLast,
+  serverTimestamp, onDisconnect, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB5_x8hqbhUQK268JAH_xe7yIU5iCJn-D8",
+  authDomain: "mychat-793be.firebaseapp.com",
+  databaseURL: "https://mychat-793be-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "mychat-793be",
+  storageBucket: "mychat-793be.firebasestorage.app",
+  messagingSenderId: "708632603021",
+  appId: "1:708632603021:web:da33cc88335e15ca1e75c4"
+};
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const $ = s => document.querySelector(s);
+const chatIdOf = (a, b) => [a, b].sort().join('_');
+
+let me = null, users = {}, meta = {}, metaWatched = new Set();
+let peer = null, chatId = null, msgs = {}, unsubs = [], lastDay = '';
+
+/* ---------- helpers ---------- */
+function initials(name){ return (name || '?').trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase(); }
+function avatar(u, size, showDot){
+  const d = document.createElement('div');
+  d.className = 'av'; d.style.width = d.style.height = size + 'px'; d.style.fontSize = size * .38 + 'px';
+  const fallback = () => { d.textContent = initials(u && u.name); if (showDot && u && u.online) addDot(); };
+  const addDot = () => { const s = document.createElement('span'); s.className = 'dot'; d.appendChild(s); };
+  if (u && u.photo){
+    const i = document.createElement('img');
+    i.referrerPolicy = 'no-referrer'; i.alt = ''; i.src = u.photo;
+    i.onerror = () => { i.remove(); fallback(); };
+    d.appendChild(i);
+    if (showDot && u.online) addDot();
+  } else fallback();
+  return d;
+}
+const fmtTime = ts => ts ? new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+function dayKey(ts){ const d = new Date(ts || Date.now()); return d.getFullYear() + '-' + d.getMonth() + '-' + d.getDate(); }
+function dayLabel(ts){
+  const d = new Date(ts || Date.now()), t = new Date(), y = new Date(); y.setDate(t.getDate() - 1);
+  if (dayKey(d) === dayKey(t)) return 'Today';
+  if (dayKey(d) === dayKey(y)) return 'Yesterday';
+  return d.toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function listTime(ts){
+  if (!ts) return '';
+  const d = new Date(ts), t = new Date(), y = new Date(); y.setDate(t.getDate() - 1);
+  if (dayKey(d) === dayKey(t)) return fmtTime(ts);
+  if (dayKey(d) === dayKey(y)) return 'Yesterday';
+  return d.toLocaleDateString([], { day: 'numeric', month: 'short' });
+}
+const TICK1 = '<svg viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6.500l3.500 3.500L14 2.500"/></svg>';
+const TICK2 = '<svg viewBox="0 0 17 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M1 6.500L4.500 10 11 2.500"/><path d="M7 8.500l1.500 1.500L15 2.500"/></svg>';
+function tickEl(status){
+  const s = document.createElement('span');
+  s.className = 'tick' + (status === 'seen' ? ' seen' : '');
+  s.innerHTML = status === 'seen' ? TICK2 : TICK1;
+  s.title = status === 'seen' ? 'Seen' : 'Sent';
+  return s;
+}
+
+/* ---------- auth ---------- */
+const provider = new GoogleAuthProvider();
+$('#gbtn').onclick = async () => {
+  $('#loginErr').textContent = '';
+  try { await signInWithPopup(auth, provider); }
+  catch (e){
+    if (e.code === 'auth/popup-blocked' || e.code === 'auth/operation-not-supported-in-this-environment'){
+      try { await signInWithRedirect(auth, provider); return; } catch (e2){ e = e2; }
+    }
+    if (e.code === 'auth/popup-closed-by-user' || e.code === 'auth/cancelled-popup-request') return;
+    $('#loginErr').textContent = e.code === 'auth/unauthorized-domain'
+      ? 'This website address is not allowed yet. Add it under Firebase Authentication > Settings > Authorized domains.'
+      : 'Could not sign in: ' + (e.code || e.message);
+  }
+};
+$('#logout').onclick = async () => {
+  try { if (me) await update(ref(db, 'users/' + me.uid), { online: false, lastSeen: serverTimestamp() }); } catch {}
+  await signOut(auth); location.reload();
+};
+
+onAuthStateChanged(auth, user => {
+  if (!user){ $('#login').classList.remove('hidden'); $('#app').classList.add('hidden'); return; }
+  me = user;
+  $('#login').classList.add('hidden'); $('#app').classList.remove('hidden');
+  startApp();
+});
+
+/* ---------- app start ---------- */
+let started = false;
+function startApp(){
+  if (started) return; started = true;
+  const myRef = ref(db, 'users/' + me.uid);
+  update(myRef, { uid: me.uid, name: me.displayName || 'Friend', photo: me.photoURL || '' });
+
+  $('#meAv').replaceChildren(avatar({ name: me.displayName, photo: me.photoURL }, 40));
+  $('#meName').textContent = me.displayName || '';
+
+  onValue(ref(db, '.info/connected'), s => {
+    if (!s.val()) return;
+    onDisconnect(myRef).update({ online: false, lastSeen: serverTimestamp() })
+      .then(() => update(myRef, { online: true }));
+  });
+
+  onValue(ref(db, 'users'), snap => {
+    users = snap.val() || {};
+    Object.keys(users).forEach(uid => {
+      if (uid === me.uid || metaWatched.has(uid)) return;
+      metaWatched.add(uid);
+      onValue(ref(db, 'chatMeta/' + chatIdOf(me.uid, uid)), s => { meta[uid] = s.val(); renderList(); if (peer && peer.uid === uid){ scheduleSeen(); } });
+    });
+    if (peer && users[peer.uid]){ peer = users[peer.uid]; renderPeerHead(); }
+    renderList();
+  });
+
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) scheduleSeen(); });
+  window.addEventListener('focus', scheduleSeen);
+}
+
+/* ---------- member list ---------- */
+$('#search').addEventListener('input', renderList);
+function renderList(){
+  if (!me) return;
+  const q = $('#search').value.trim().toLowerCase();
+  const arr = Object.values(users).filter(u => u.uid !== me.uid && (!q || (u.name || '').toLowerCase().includes(q)));
+  arr.sort((a, b) => ((meta[b.uid] && meta[b.uid].ts) || 0) - ((meta[a.uid] && meta[a.uid].ts) || 0) || (a.name || '').localeCompare(b.name || ''));
+  const box = $('#list'); box.replaceChildren();
+  if (!arr.length){
+    const e = document.createElement('div'); e.className = 'listempty';
+    e.textContent = q ? 'No member with that name.' : 'No members yet. Ask your friends to sign in with Google and they will show up here.';
+    box.appendChild(e); return;
+  }
+  arr.forEach(u => {
+    const m = meta[u.uid] || {};
+    const unread = (m.unread && m.unread[me.uid]) || 0;
+    const b = document.createElement('button');
+    b.className = 'item' + (peer && peer.uid === u.uid ? ' active' : '');
+    b.appendChild(avatar(u, 52, true));
+    const mid = document.createElement('div'); mid.className = 'mid';
+    const top = document.createElement('div'); top.className = 'top';
+    const nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = u.name || 'Friend';
+    const tm = document.createElement('span'); tm.className = 'tm' + (unread ? ' un' : ''); tm.textContent = listTime(m.ts);
+    top.append(nm, tm);
+    const bot = document.createElement('div'); bot.className = 'bot';
+    const pv = document.createElement('span'); pv.className = 'pv';
+    if (m.lastText){
+      if (m.lastFrom === me.uid) pv.appendChild(tickEl(m.lastStatus));
+      const t = document.createElement('span'); t.textContent = m.lastText; t.style.overflow = 'hidden'; t.style.textOverflow = 'ellipsis';
+      pv.appendChild(t);
+    } else pv.textContent = 'Say hi';
+    bot.appendChild(pv);
+    if (unread){ const bd = document.createElement('span'); bd.className = 'badge'; bd.textContent = unread > 99 ? '99+' : unread; bot.appendChild(bd); }
+    mid.append(top, bot); b.appendChild(mid);
+    b.onclick = () => openChat(u);
+    box.appendChild(b);
+  });
+}
+
+/* ---------- chat ---------- */
+function renderPeerHead(){
+  $('#peerAv').replaceChildren(avatar(peer, 42, true));
+  $('#peerName').textContent = peer.name || 'Friend';
+  let s = '';
+  if (peer.online) s = 'online';
+  else if (peer.lastSeen) s = 'last seen ' + (dayKey(peer.lastSeen) === dayKey() ? 'today' : listTime(peer.lastSeen)) + (dayKey(peer.lastSeen) === dayKey() ? ' at ' + fmtTime(peer.lastSeen) : '');
+  $('#peerStatus').textContent = s;
+}
+
+function openChat(u){
+  unsubs.forEach(f => f()); unsubs = [];
+  peer = u; chatId = chatIdOf(me.uid, u.uid); msgs = {}; lastDay = '';
+  $('#msgs').replaceChildren();
+  $('#noChat').classList.add('hidden'); $('#chatPane').classList.remove('hidden');
+  $('#app').classList.add('chat-open');
+  renderPeerHead();
+  const q = query(ref(db, 'chats/' + chatId), limitToLast(300));
+  unsubs.push(onChildAdded(q, s => addMsg(s.key, s.val())));
+  unsubs.push(onChildChanged(q, s => updMsg(s.key, s.val())));
+  scheduleSeen(); renderList();
+  if (window.matchMedia('(min-width:761px)').matches) $('#inp').focus();
+}
+$('#back').onclick = () => {
+  $('#app').classList.remove('chat-open');
+  unsubs.forEach(f => f()); unsubs = []; peer = null; chatId = null; renderList();
+};
+
+function addMsg(k, m){
+  const box = $('#msgs');
+  const near = box.scrollHeight - box.scrollTop - box.clientHeight < 140;
+  const mine = m.from === me.uid;
+  msgs[k] = m;
+  const dk = dayKey(m.ts);
+  if (dk !== lastDay){
+    lastDay = dk;
+    const d = document.createElement('div'); d.className = 'day'; d.textContent = dayLabel(m.ts); box.appendChild(d);
+  }
+  const row = document.createElement('div'); row.className = 'row ' + (mine ? 'mine' : 'theirs'); row.dataset.k = k;
+  const bub = document.createElement('div'); bub.className = 'bub';
+  const meta_ = document.createElement('span'); meta_.className = 'meta';
+  const tm = document.createElement('span'); tm.textContent = fmtTime(m.ts); meta_.appendChild(tm);
+  if (mine) meta_.appendChild(tickEl(m.status));
+  bub.append(document.createTextNode(m.text), meta_);
+  row.appendChild(bub); box.appendChild(row);
+  if (near || mine) box.scrollTop = box.scrollHeight;
+  if (!mine) scheduleSeen();
+  refreshSeen();
+}
+function updMsg(k, m){
+  msgs[k] = m;
+  const row = $('#msgs').querySelector('.row[data-k="' + k + '"]');
+  if (!row) return;
+  const meta_ = row.querySelector('.meta');
+  const old = meta_.querySelector('.tick');
+  if (m.from === me.uid){ const t = tickEl(m.status); old ? old.replaceWith(t) : meta_.appendChild(t); }
+  const tm = meta_.firstChild; if (tm && m.ts) tm.textContent = fmtTime(m.ts);
+  refreshSeen();
+}
+function refreshSeen(){
+  const box = $('#msgs');
+  box.querySelectorAll('.seenlbl').forEach(e => e.remove());
+  const mineRows = box.querySelectorAll('.row.mine');
+  const last = mineRows[mineRows.length - 1];
+  if (!last) return;
+  const m = msgs[last.dataset.k];
+  if (m && m.status === 'seen'){
+    const l = document.createElement('div'); l.className = 'seenlbl';
+    l.textContent = 'Seen' + (m.seenAt ? ' ' + fmtTime(m.seenAt) : '') + ' \u2665';
+    last.appendChild(l);
+    const near = box.scrollHeight - box.scrollTop - box.clientHeight < 140;
+    if (near) box.scrollTop = box.scrollHeight;
+  }
+}
+
+/* mark incoming messages as seen while this chat is open */
+let seenT;
+function scheduleSeen(){ clearTimeout(seenT); seenT = setTimeout(markSeen, 200); }
+function markSeen(){
+  if (!peer || !chatId || document.hidden) return;
+  const up = {}; let any = false;
+  for (const [k, m] of Object.entries(msgs)){
+    if (m.from !== me.uid && m.status !== 'seen'){
+      up['chats/' + chatId + '/' + k + '/status'] = 'seen';
+      up['chats/' + chatId + '/' + k + '/seenAt'] = serverTimestamp();
+      m.status = 'seen'; any = true;
+    }
+  }
+  if (any) update(ref(db), up).catch(() => {});
+  const mt = meta[peer.uid] || {};
+  const mu = {};
+  if (mt.unread && mt.unread[me.uid]) mu['unread/' + me.uid] = 0;
+  if (mt.lastFrom === peer.uid && mt.lastStatus !== 'seen') mu.lastStatus = 'seen';
+  if (Object.keys(mu).length) update(ref(db, 'chatMeta/' + chatId), mu).catch(() => {});
+}
+
+/* ---------- sending ---------- */
+const inp = $('#inp');
+function resize(){ inp.style.height = '44px'; inp.style.height = Math.min(inp.scrollHeight, 120) + 'px'; }
+inp.addEventListener('input', resize);
+inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+$('#send').onclick = () => { send(); inp.focus(); };
+
+function send(){
+  const text = inp.value.trim();
+  if (!text || !peer) return;
+  const cid = chatId, to = peer.uid;
+  inp.value = ''; resize();
+  const mref = push(ref(db, 'chats/' + cid));
+  set(mref, { from: me.uid, text, ts: serverTimestamp(), status: 'sent' });
+  update(ref(db, 'chatMeta/' + cid), { lastText: text.slice(0, 80), lastFrom: me.uid, ts: serverTimestamp(), lastStatus: 'sent' });
+  runTransaction(ref(db, 'chatMeta/' + cid + '/unread/' + to), n => (n || 0) + 1);
+}
+</script>
+</body>
+</html>
