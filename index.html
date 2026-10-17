@@ -3,10 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>My Chat</title>
-<link rel="icon" type="image/png" href="icon.png">
-<link rel="apple-touch-icon" href="icon.png">
-<meta name="theme-color" content="#4a0a52">
+<title>NetSpeed – Internet Speed Test</title>
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NetSpeed">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -108,12 +113,118 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   .row{max-width:86%}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+/* ===== disguise: NetSpeed ===== */
+#chatRoot{position:fixed;inset:0;z-index:50;background:var(--plum)}
+.lockbtn{margin-left:auto}
+#loginBack{position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;color:#fff;opacity:.8}
+#speed{position:fixed;inset:0;z-index:40;overflow-y:auto;background:#f3f7ff;color:#0b1f3a;font-family:var(--font);-webkit-overflow-scrolling:touch}
+.sp-top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:calc(12px + env(safe-area-inset-top)) 18px 12px;background:#fff;box-shadow:0 1px 0 #e1e9f7}
+.sp-brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:20px;letter-spacing:-.2px;color:#0b1f3a}
+.sp-brand svg{width:30px;height:30px}
+.sp-search{flex:1;min-width:220px;max-width:560px;margin-left:auto;display:flex;align-items:center;background:#eef3fc;border-radius:999px;border:1px solid #dbe5f6}
+.sp-search:focus-within{border-color:#1565ff;background:#fff}
+.sp-search input{flex:1;min-width:0;border:0;background:none;padding:11px 6px 11px 18px;font:inherit;font-size:15px;color:#0b1f3a;outline:none}
+.sp-search input::-webkit-search-cancel-button{display:none}
+.sp-search button{width:44px;height:40px;display:grid;place-items:center;color:#1565ff;border-radius:999px;-webkit-touch-callout:none;user-select:none;touch-action:manipulation}
+.sp-search button svg{width:20px;height:20px}
+.sp-main{max-width:640px;margin:0 auto;padding:18px 16px calc(32px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:16px}
+.sp-card{background:#fff;border-radius:20px;padding:20px;box-shadow:0 6px 24px rgba(21,101,255,.08)}
+.sp-card h2{font-size:15px;font-weight:700;margin-bottom:12px}
+.sp-gauge{text-align:center;padding-top:16px}
+.sp-phase{font-size:14px;font-weight:600;color:#5b6f8f;min-height:20px}
+.sp-gwrap{position:relative;width:min(100%,320px);margin:6px auto 0}
+.sp-gwrap svg{width:100%;display:block}
+.sp-arc{transition:stroke-dasharray .18s linear}
+.sp-num{position:absolute;left:0;right:0;bottom:2px;display:flex;flex-direction:column;align-items:center;line-height:1}
+.sp-num b{font-size:50px;font-weight:700;letter-spacing:-1px}
+.sp-num span{font-size:13px;color:#5b6f8f;margin-top:4px}
+.sp-go{margin-top:16px;padding:14px 38px;border-radius:999px;background:linear-gradient(135deg,#1565ff,#19c3a6);color:#fff;font-weight:700;font-size:16px;box-shadow:0 8px 22px rgba(21,101,255,.3)}
+.sp-go:disabled{opacity:.7;cursor:default}
+.sp-note{margin-top:10px;font-size:13px;color:#c0392b;min-height:18px}
+.sp-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.sp-tile{background:#fff;border-radius:18px;padding:14px 16px;box-shadow:0 6px 24px rgba(21,101,255,.07)}
+.sp-tile small{display:block;font-size:13px;color:#5b6f8f}
+.sp-tile b{font-size:24px;font-weight:700}
+.sp-tile b i{font-style:normal;font-size:13px;font-weight:600;color:#5b6f8f;margin-left:4px}
+.sp-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;font-size:14px;border-top:1px solid #edf2fb}
+.sp-row:first-of-type{border-top:0}
+.sp-row span:first-child{color:#5b6f8f}
+.sp-empty{font-size:14px;color:#8a9bb8}
+.sp-modal{position:fixed;inset:0;z-index:60;display:grid;place-items:center;padding:20px;background:rgba(11,31,58,.45)}
+.sp-dlg{width:min(100%,360px);background:#fff;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:10px;color:#0b1f3a}
+.sp-dlg h3{font-size:18px}
+.sp-dlg input{border:1px solid #dbe5f6;border-radius:12px;padding:12px 14px;font:inherit;font-size:15px;background:#f7faff;color:#0b1f3a}
+.sp-dlg input:focus{outline:2px solid #1565ff;border-color:transparent}
+.sp-err{font-size:13px;color:#c0392b;min-height:16px}
+.sp-acts{display:flex;justify-content:flex-end;gap:10px;margin-top:4px}
+.sp-acts button{padding:10px 18px;border-radius:12px;font-weight:700}
+.sp-acts .ok{background:#1565ff;color:#fff}
+.sp-acts .no{color:#5b6f8f}
 </style>
 </head>
 <body>
+<!-- NetSpeed (front screen) -->
+<div id="speed">
+  <header class="sp-top">
+    <div class="sp-brand">
+      <svg viewBox="0 0 32 32"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1565ff"/><stop offset="1" stop-color="#19c3a6"/></linearGradient></defs><rect width="32" height="32" rx="9" fill="url(#lg)"/><path d="M7 21a9 9 0 0 1 18 0" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><path d="M16 21l4-6" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>
+      NetSpeed
+    </div>
+    <form class="sp-search" id="spForm" autocomplete="off">
+      <input id="spQ" type="search" placeholder="Search the web" aria-label="Search the web" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+      <button id="spBtn" type="submit" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+    </form>
+  </header>
+  <main class="sp-main">
+    <section class="sp-card sp-gauge">
+      <div class="sp-phase" id="spPhase">Ready to test</div>
+      <div class="sp-gwrap">
+        <svg viewBox="0 0 260 140" aria-hidden="true">
+          <defs><linearGradient id="gr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1565ff"/><stop offset="1" stop-color="#19c3a6"/></linearGradient></defs>
+          <path d="M 20 130 A 110 110 0 0 1 240 130" fill="none" stroke="#e3ecfa" stroke-width="16" stroke-linecap="round"/>
+          <path id="spArc" class="sp-arc" d="M 20 130 A 110 110 0 0 1 240 130" fill="none" stroke="url(#gr)" stroke-width="16" stroke-linecap="round" stroke-dasharray="0 346"/>
+        </svg>
+        <div class="sp-num"><b id="spNum">0</b><span>Mbps</span></div>
+      </div>
+      <button class="sp-go" id="spGo" type="button">Start test</button>
+      <div class="sp-note" id="spNote" role="status"></div>
+    </section>
+    <section class="sp-grid">
+      <div class="sp-tile"><small>Download</small><b id="tDl">&ndash;<i>Mbps</i></b></div>
+      <div class="sp-tile"><small>Upload</small><b id="tUl">&ndash;<i>Mbps</i></b></div>
+      <div class="sp-tile"><small>Ping</small><b id="tPing">&ndash;<i>ms</i></b></div>
+      <div class="sp-tile"><small>Jitter</small><b id="tJit">&ndash;<i>ms</i></b></div>
+    </section>
+    <section class="sp-card">
+      <h2>Connection</h2>
+      <div class="sp-row"><span>Status</span><span id="cStatus">&ndash;</span></div>
+      <div class="sp-row"><span>Network type</span><span id="cType">&ndash;</span></div>
+      <div class="sp-row"><span>Estimated speed</span><span id="cDown">&ndash;</span></div>
+    </section>
+    <section class="sp-card">
+      <h2>Recent tests</h2>
+      <div id="spHist"></div>
+    </section>
+  </main>
+</div>
+
+<div id="pwModal" class="sp-modal hidden" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+  <div class="sp-dlg">
+    <h3 id="pwTitle">Set password</h3>
+    <input id="pwCur" type="password" placeholder="Current password" autocomplete="off">
+    <input id="pwNew" type="password" placeholder="New password" autocomplete="new-password">
+    <input id="pwCon" type="password" placeholder="Confirm password" autocomplete="new-password">
+    <div class="sp-err" id="pwErr" role="alert"></div>
+    <div class="sp-acts"><button type="button" class="no" id="pwCancel">Cancel</button><button type="button" class="ok" id="pwSave">Save</button></div>
+  </div>
+</div>
+
+<div id="chatRoot" class="hidden">
 
 <!-- LOGIN -->
 <div id="login" class="hidden">
+  <button class="iconbtn" id="loginBack" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
   <img src="icon.png" alt="My Chat">
   <h1>My Chat</h1>
   <p>Chat with the people you love, in realtime.</p>
@@ -129,6 +240,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   <aside class="side">
     <div class="sidehead">
       <div class="me"><span id="meAv"></span><div style="min-width:0"><div class="brand">My Chat</div><div class="myname" id="meName"></div></div></div>
+      <button class="iconbtn lockbtn" title="Lock" aria-label="Lock" style="margin-left:0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
       <button class="iconbtn" id="logout" title="Log out" aria-label="Log out">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
       </button>
@@ -150,6 +262,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
         </button>
         <span id="peerAv"></span>
         <div class="who"><b id="peerName"></b><small id="peerStatus"></small></div>
+        <button class="iconbtn lockbtn" title="Lock" aria-label="Lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
       </div>
       <div id="msgs"></div>
       <div class="composer">
@@ -162,6 +275,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   </main>
 </div>
 
+</div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut }
@@ -185,6 +299,7 @@ const db = getDatabase(app);
 const $ = s => document.querySelector(s);
 const chatIdOf = (a, b) => [a, b].sort().join('_');
 
+let locked = true;
 let me = null, users = {}, meta = {}, metaWatched = new Set();
 let peer = null, chatId = null, msgs = {}, unsubs = [], lastDay = '';
 
@@ -405,7 +520,7 @@ function refreshSeen(){
 let seenT;
 function scheduleSeen(){ clearTimeout(seenT); seenT = setTimeout(markSeen, 200); }
 function markSeen(){
-  if (!peer || !chatId || document.hidden) return;
+  if (!peer || !chatId || document.hidden || locked) return;
   const up = {}; let any = false;
   for (const [k, m] of Object.entries(msgs)){
     if (m.from !== me.uid && m.status !== 'seen'){
@@ -439,6 +554,263 @@ function send(){
   update(ref(db, 'chatMeta/' + cid), { lastText: text.slice(0, 80), lastFrom: me.uid, ts: serverTimestamp(), lastStatus: 'sent' });
   runTransaction(ref(db, 'chatMeta/' + cid + '/unread/' + to), n => (n || 0) + 1);
 }
+
+/* =====================================================================
+   NetSpeed front screen + secret password lock
+   ===================================================================== */
+const AUTO_LOCK = true;   // true = chat hides itself when you switch apps/tabs
+
+/* --- small synchronous SHA-256 (used only for the local password check) --- */
+const SHA_K = [], SHA_H = [];
+(function(){ let c = 0;
+  for (let n = 2; c < 64; n++){
+    let p = true; for (let d = 2; d * d <= n; d++) if (n % d === 0){ p = false; break; }
+    if (!p) continue;
+    if (c < 8) SHA_H[c] = (Math.pow(n, 1 / 2) % 1 * 4294967296) | 0;
+    SHA_K[c++] = (Math.pow(n, 1 / 3) % 1 * 4294967296) | 0;
+  }
+})();
+const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+function sha256(str){
+  const s = unescape(encodeURIComponent(str)), b = [];
+  for (let i = 0; i < s.length; i++) b[i >> 2] |= s.charCodeAt(i) << (24 - (i % 4) * 8);
+  const l = s.length * 8; b[l >> 5] |= 0x80 << (24 - l % 32); b[(((l + 64) >> 9) << 4) + 15] = l;
+  const H = SHA_H.slice(), W = [];
+  for (let j = 0; j < b.length; j += 16){
+    let [a, bb, c, d, e, f, g, h] = H;
+    for (let i = 0; i < 64; i++){
+      if (i < 16) W[i] = b[j + i] | 0;
+      else {
+        const g0 = W[i - 15], g1 = W[i - 2];
+        W[i] = (W[i - 16] + (rotr(g0, 7) ^ rotr(g0, 18) ^ (g0 >>> 3)) + W[i - 7] + (rotr(g1, 17) ^ rotr(g1, 19) ^ (g1 >>> 10))) | 0;
+      }
+      const t1 = (h + (rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25)) + ((e & f) ^ (~e & g)) + SHA_K[i] + W[i]) | 0;
+      const t2 = ((rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22)) + ((a & bb) ^ (a & c) ^ (bb & c))) | 0;
+      h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = bb; bb = a; a = (t1 + t2) | 0;
+    }
+    H[0] = (H[0] + a) | 0; H[1] = (H[1] + bb) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+    H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+  }
+  return H.map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+}
+
+/* --- password storage (per device, hashed) --- */
+const PW_KEY = 'ns_cfg';
+const getCfg = () => { try { return JSON.parse(localStorage.getItem(PW_KEY)); } catch { return null; } };
+const hashPw = (pw, salt) => { let h = pw; for (let i = 0; i < 2000; i++) h = sha256(salt + ':' + h); return h; };
+const pwIsSet = () => { const c = getCfg(); return !!(c && c.salt && c.hash); };
+const checkPw = pw => { const c = getCfg(); return !!(c && hashPw(pw, c.salt) === c.hash); };
+function savePw(pw){
+  const salt = Array.from(crypto.getRandomValues(new Uint8Array(12))).map(x => x.toString(16).padStart(2, '0')).join('');
+  localStorage.setItem(PW_KEY, JSON.stringify({ salt, hash: hashPw(pw, salt) }));
+}
+
+/* --- lock / unlock --- */
+function unlockChat(){
+  locked = false;
+  $('#speed').classList.add('hidden');
+  $('#chatRoot').classList.remove('hidden');
+  scheduleSeen();
+}
+function lockChat(){
+  locked = true;
+  $('#chatRoot').classList.add('hidden');
+  $('#speed').classList.remove('hidden');
+  $('#spQ').value = '';
+}
+document.querySelectorAll('.lockbtn').forEach(b => b.onclick = lockChat);
+$('#loginBack').onclick = lockChat;
+document.addEventListener('visibilitychange', () => { if (AUTO_LOCK && document.hidden && !locked && me) lockChat(); });
+
+/* --- search box (opens the chat when the saved password is typed) --- */
+let lpFired = false, lpTimer = null;
+$('#spForm').addEventListener('submit', e => {
+  e.preventDefault();
+  if (lpFired){ lpFired = false; return; }
+  const q = $('#spQ').value;
+  if (!q.trim()) return;
+  if (pwIsSet() && checkPw(q)){ $('#spQ').value = ''; unlockChat(); return; }
+  window.open('https://www.google.com/search?q=' + encodeURIComponent(q.trim()), '_blank', 'noopener');
+});
+const sb = $('#spBtn');
+sb.addEventListener('contextmenu', e => e.preventDefault());
+sb.addEventListener('pointerdown', () => {
+  clearTimeout(lpTimer);
+  lpTimer = setTimeout(() => { lpFired = true; openPwModal(); }, 700);
+});
+['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => sb.addEventListener(ev, () => {
+  clearTimeout(lpTimer);
+  if (lpFired) setTimeout(() => { lpFired = false; }, 600);
+}));
+
+/* --- set password dialog (long-press the search button) --- */
+function openPwModal(){
+  const has = pwIsSet();
+  $('#pwTitle').textContent = has ? 'Change password' : 'Set password';
+  $('#pwCur').classList.toggle('hidden', !has);
+  ['#pwCur', '#pwNew', '#pwCon'].forEach(s => $(s).value = '');
+  $('#pwErr').textContent = '';
+  $('#pwModal').classList.remove('hidden');
+  (has ? $('#pwCur') : $('#pwNew')).focus();
+}
+const closePw = () => $('#pwModal').classList.add('hidden');
+$('#pwCancel').onclick = closePw;
+$('#pwModal').addEventListener('keydown', e => { if (e.key === 'Escape') closePw(); if (e.key === 'Enter') $('#pwSave').click(); });
+$('#pwSave').onclick = () => {
+  const err = m => { $('#pwErr').textContent = m; };
+  const n = $('#pwNew').value, c = $('#pwCon').value;
+  if (pwIsSet() && !checkPw($('#pwCur').value)) return err('Current password is wrong.');
+  if (n.length < 4) return err('Use at least 4 characters.');
+  if (n !== c) return err('Passwords do not match.');
+  savePw(n); closePw();
+  const note = $('#spNote'); note.style.color = '#1a8f5c'; note.textContent = 'Saved.';
+  setTimeout(() => { note.textContent = ''; note.style.color = ''; }, 1800);
+};
+
+/* --- speed test --- */
+const CF = 'https://speed.cloudflare.com';
+const ARC = Math.PI * 110;
+const gaugeFrac = v => Math.min(1, Math.log10(1 + v) / 3.05);
+function setGauge(v){
+  $('#spArc').style.strokeDasharray = (gaugeFrac(v) * ARC) + ' ' + ARC;
+  $('#spNum').textContent = v >= 100 ? v.toFixed(0) : v.toFixed(1);
+}
+const tile = (id, val, unit) => { $(id).innerHTML = (val == null ? '&ndash;' : val) + '<i>' + unit + '</i>'; };
+const phase = t => { $('#spPhase').textContent = t; };
+const note = t => { const n = $('#spNote'); n.style.color = ''; n.textContent = t; };
+
+async function pingTest(){
+  const t = [];
+  for (let i = 0; i < 7; i++){
+    const s = performance.now();
+    await fetch(CF + '/__down?bytes=0&r=' + Math.random(), { cache: 'no-store' });
+    t.push(performance.now() - s);
+  }
+  t.shift();
+  const sorted = [...t].sort((a, b) => a - b), ping = sorted[Math.floor(sorted.length / 2)];
+  let j = 0; for (let i = 1; i < t.length; i++) j += Math.abs(t[i] - t[i - 1]);
+  return { ping, jitter: j / (t.length - 1) };
+}
+async function downloadTest(on){
+  const DUR = 9000, WARM = 1500, t0 = performance.now(), ctrl = new AbortController();
+  let bytes = 0, mark = null, final = 0;
+  const worker = async () => {
+    while (performance.now() - t0 < DUR){
+      let r;
+      try { r = await fetch(CF + '/__down?bytes=30000000&r=' + Math.random(), { cache: 'no-store', signal: ctrl.signal }); } catch { return; }
+      const rd = r.body.getReader();
+      try {
+        for (;;){
+          const { done, value } = await rd.read();
+          if (done) break;
+          bytes += value.length;
+          const now = performance.now();
+          if (!mark && now - t0 >= WARM) mark = { t: now, b: bytes };
+          if (mark && now - mark.t > 300){ final = (bytes - mark.b) * 8 / ((now - mark.t) / 1000) / 1e6; on(final); }
+          else if (!mark) on(bytes * 8 / ((now - t0) / 1000) / 1e6);
+          if (now - t0 >= DUR){ ctrl.abort(); return; }
+        }
+      } catch { return; }
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]);
+  if (!bytes) throw new Error('download');
+  return final || bytes * 8 / ((performance.now() - t0) / 1000) / 1e6;
+}
+function uploadTest(on){
+  return new Promise((resolve, reject) => {
+    const DUR = 7000, WARM = 1000, t0 = performance.now();
+    const blob = new Blob([new Uint8Array(2000000)], { type: 'application/octet-stream' });
+    const loaded = [0, 0, 0], xhrs = [];
+    let mark = null, final = 0, finished = false;
+    const total = () => loaded[0] + loaded[1] + loaded[2];
+    const calc = () => {
+      const now = performance.now();
+      if (!mark && now - t0 >= WARM) mark = { t: now, b: total() };
+      if (mark && now - mark.t > 300) final = (total() - mark.b) * 8 / ((now - mark.t) / 1000) / 1e6;
+      else if (!mark) final = total() * 8 / ((now - t0) / 1000) / 1e6;
+      return final;
+    };
+    const finish = () => {
+      if (finished) return; finished = true;
+      xhrs.forEach(x => { try { x.abort(); } catch {} });
+      const v = calc();
+      if (!total()) reject(new Error('upload')); else resolve(v);
+    };
+    const worker = i => {
+      let base = 0;
+      const next = () => {
+        if (finished) return;
+        const x = new XMLHttpRequest(); xhrs.push(x);
+        x.open('POST', CF + '/__up?r=' + Math.random());
+        x.upload.onprogress = e => { loaded[i] = base + e.loaded; on(calc()); };
+        x.onload = () => { base += blob.size; loaded[i] = base; next(); };
+        x.onerror = () => { if (!total()) finish(); };
+        x.send(blob);
+      };
+      next();
+    };
+    [0, 1, 2].forEach(worker);
+    setTimeout(finish, DUR);
+  });
+}
+
+let running = false;
+async function runTest(){
+  if (running) return;
+  if (!navigator.onLine){ note('You are offline. Check your connection and try again.'); return; }
+  running = true; note('');
+  const go = $('#spGo'); go.disabled = true; go.textContent = 'Testing\u2026';
+  tile('#tDl', null, 'Mbps'); tile('#tUl', null, 'Mbps'); tile('#tPing', null, 'ms'); tile('#tJit', null, 'ms'); setGauge(0);
+  const res = {};
+  try {
+    phase('Checking ping\u2026');
+    const p = await pingTest(); res.ping = Math.round(p.ping); res.jit = Math.round(p.jitter);
+    tile('#tPing', res.ping, 'ms'); tile('#tJit', res.jit, 'ms');
+    phase('Testing download\u2026');
+    res.dl = await downloadTest(setGauge); setGauge(res.dl); tile('#tDl', res.dl.toFixed(1), 'Mbps');
+    phase('Testing upload\u2026'); setGauge(0);
+    try { res.ul = await uploadTest(setGauge); setGauge(res.ul); tile('#tUl', res.ul.toFixed(1), 'Mbps'); }
+    catch { tile('#tUl', 'n/a', ''); }
+    phase('Test complete');
+    saveHist(res);
+  } catch {
+    phase('Ready to test'); setGauge(0);
+    note('The test could not finish. Check your connection and try again.');
+  } finally {
+    running = false; go.disabled = false; go.textContent = 'Test again';
+  }
+}
+$('#spGo').onclick = runTest;
+
+/* --- history + connection info --- */
+const HIST_KEY = 'ns_hist';
+const getHist = () => { try { return JSON.parse(localStorage.getItem(HIST_KEY)) || []; } catch { return []; } };
+function saveHist(r){
+  const h = getHist(); h.unshift({ t: Date.now(), dl: r.dl, ul: r.ul, ping: r.ping });
+  try { localStorage.setItem(HIST_KEY, JSON.stringify(h.slice(0, 5))); } catch {}
+  renderHist();
+}
+function renderHist(){
+  const box = $('#spHist'), h = getHist(); box.replaceChildren();
+  if (!h.length){ const e = document.createElement('div'); e.className = 'sp-empty'; e.textContent = 'No tests yet. Press Start test.'; box.appendChild(e); return; }
+  h.forEach(x => {
+    const r = document.createElement('div'); r.className = 'sp-row';
+    const a = document.createElement('span'); a.textContent = new Date(x.t).toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+    const b = document.createElement('span');
+    b.textContent = '\u2193 ' + (x.dl != null ? x.dl.toFixed(1) : '-') + '  \u2191 ' + (x.ul != null ? x.ul.toFixed(1) : '-') + '  ' + x.ping + ' ms';
+    r.append(a, b); box.appendChild(r);
+  });
+}
+function renderConn(){
+  const c = navigator.connection;
+  $('#cStatus').textContent = navigator.onLine ? 'Online' : 'Offline';
+  $('#cType').textContent = c && c.effectiveType ? c.effectiveType.toUpperCase() : 'Not available';
+  $('#cDown').textContent = c && c.downlink ? c.downlink + ' Mbps' : 'Not available';
+}
+window.addEventListener('online', renderConn); window.addEventListener('offline', renderConn);
+if (navigator.connection) navigator.connection.addEventListener('change', renderConn);
+renderHist(); renderConn();
 </script>
 </body>
 </html>
