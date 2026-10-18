@@ -161,6 +161,36 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
 .sp-acts button{padding:10px 18px;border-radius:12px;font-weight:700}
 .sp-acts .ok{background:#1565ff;color:#fff}
 .sp-acts .no{color:#5b6f8f}
+
+/* ===== calls ===== */
+.chathead .who{flex:1}
+.chathead .lockbtn{margin-left:0}
+#callUI{position:fixed;inset:0;z-index:80;background:linear-gradient(160deg,#c4124f 0%,#5a0f6e 55%,#2a0a45 100%);display:flex;flex-direction:column;align-items:center;color:#fff}
+#remoteV{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#1a0630;display:none}
+#callUI[data-type="video"][data-mode="active"] #remoteV{display:block}
+.cl-top{position:relative;z-index:2;margin-top:calc(70px + env(safe-area-inset-top));display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;text-shadow:0 2px 10px rgba(0,0,0,.45)}
+.cl-top b{font-size:26px}
+#clStatus{font-size:15px;opacity:.9}
+#callUI[data-type="video"][data-mode="active"] .cl-top{margin-top:calc(16px + env(safe-area-inset-top))}
+#callUI[data-type="video"][data-mode="active"] #clAv{display:none}
+#clAv .av{box-shadow:0 0 0 8px rgba(255,255,255,.12),0 0 0 18px rgba(255,255,255,.07)}
+#localV{position:absolute;z-index:3;right:14px;top:calc(14px + env(safe-area-inset-top));width:104px;height:148px;object-fit:cover;border-radius:16px;background:#2a0a45;box-shadow:0 6px 20px rgba(0,0,0,.45);display:none;transform:scaleX(-1)}
+#callUI[data-type="video"] #localV{display:block}
+#callUI[data-type="video"][data-mode="incoming"] #localV{display:none}
+.cl-bar{position:absolute;z-index:4;left:0;right:0;bottom:calc(36px + env(safe-area-inset-bottom));display:flex;justify-content:center;gap:22px}
+#callUI[data-mode="incoming"] #clActive{display:none}
+#callUI[data-mode="active"] #clIncoming{display:none}
+.cl-btn{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);transition:transform .12s,background .15s}
+.cl-btn:active{transform:scale(.92)}
+.cl-btn svg{width:26px;height:26px}
+.cl-btn.end,.cl-btn.decline{background:#ff3b30}
+.cl-btn.end svg,.cl-btn.decline svg{transform:rotate(135deg)}
+.cl-btn.answer{background:#25d366}
+.cl-btn.off{background:#fff;color:#3d0f5c}
+.cl-btn .slash{display:none}
+.cl-btn.off .slash{display:block}
+#callUI[data-type="audio"] .vonly{display:none}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:90;max-width:88%;background:rgba(20,0,40,.92);color:#fff;padding:11px 18px;border-radius:14px;font-size:14px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.4)}
 </style>
 </head>
 <body>
@@ -220,6 +250,24 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
   </div>
 </div>
 
+<div id="callUI" class="hidden" data-mode="active" data-type="audio">
+  <video id="remoteV" autoplay playsinline></video>
+  <audio id="remoteA" autoplay></audio>
+  <video id="localV" autoplay playsinline muted></video>
+  <div class="cl-top"><div id="clAv"></div><b id="clName"></b><span id="clStatus"></span></div>
+  <div class="cl-bar" id="clIncoming">
+    <button class="cl-btn decline" id="clDecline" aria-label="Decline"><svg viewBox="0 0 24 24" fill="#fff"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+    <button class="cl-btn answer" id="clAnswer" aria-label="Answer"><svg viewBox="0 0 24 24" fill="#fff"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+  </div>
+  <div class="cl-bar" id="clActive">
+    <button class="cl-btn" id="clMute" aria-label="Mute"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/><path class="slash" d="M2 2l20 20"/></svg></button>
+    <button class="cl-btn vonly" id="clCam" aria-label="Camera"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/><path class="slash" d="M2 2l20 20"/></svg></button>
+    <button class="cl-btn vonly" id="clFlip" aria-label="Switch camera"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button>
+    <button class="cl-btn end" id="clEnd" aria-label="End call"><svg viewBox="0 0 24 24" fill="#fff"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+  </div>
+</div>
+<div id="toast" class="hidden" role="status"></div>
+
 <div id="chatRoot" class="hidden">
 
 <!-- LOGIN -->
@@ -262,6 +310,8 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px soli
         </button>
         <span id="peerAv"></span>
         <div class="who"><b id="peerName"></b><small id="peerStatus"></small></div>
+        <button class="iconbtn" id="callA" title="Voice call" aria-label="Voice call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></button>
+        <button class="iconbtn" id="callV" title="Video call" aria-label="Video call"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></button>
         <button class="iconbtn lockbtn" title="Lock" aria-label="Lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></button>
       </div>
       <div id="msgs"></div>
@@ -281,7 +331,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, onAuthStateChanged, signOut }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getDatabase, ref, set, update, push, onValue, onChildAdded, onChildChanged, query, limitToLast,
-  serverTimestamp, onDisconnect, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+  serverTimestamp, onDisconnect, runTransaction, get, remove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB5_x8hqbhUQK268JAH_xe7yIU5iCJn-D8",
@@ -360,7 +410,7 @@ $('#gbtn').onclick = async () => {
   }
 };
 $('#logout').onclick = async () => {
-  try { if (me) await update(ref(db, 'users/' + me.uid), { online: false, lastSeen: serverTimestamp() }); } catch {}
+  try { if (me) await update(ref(db, 'users/' + me.uid), { online: false, inChat: false, lastSeen: serverTimestamp() }); } catch {}
   await signOut(auth); location.reload();
 };
 
@@ -376,15 +426,15 @@ let started = false;
 function startApp(){
   if (started) return; started = true;
   const myRef = ref(db, 'users/' + me.uid);
-  update(myRef, { uid: me.uid, name: me.displayName || 'Friend', photo: me.photoURL || '' });
+  update(myRef, { uid: me.uid, name: me.displayName || 'Friend', photo: me.photoURL || '', inChat: false });
 
   $('#meAv').replaceChildren(avatar({ name: me.displayName, photo: me.photoURL }, 40));
   $('#meName').textContent = me.displayName || '';
 
   onValue(ref(db, '.info/connected'), s => {
     if (!s.val()) return;
-    onDisconnect(myRef).update({ online: false, lastSeen: serverTimestamp() })
-      .then(() => update(myRef, { online: true }));
+    onDisconnect(myRef).update({ online: false, inChat: false, lastSeen: serverTimestamp() })
+      .then(() => update(myRef, { online: true, inChat: !locked }));
   });
 
   onValue(ref(db, 'users'), snap => {
@@ -400,6 +450,7 @@ function startApp(){
 
   document.addEventListener('visibilitychange', () => { if (!document.hidden) scheduleSeen(); });
   window.addEventListener('focus', scheduleSeen);
+  initCalls();
 }
 
 /* ---------- member list ---------- */
@@ -547,8 +598,10 @@ $('#send').onclick = () => { send(); inp.focus(); };
 function send(){
   const text = inp.value.trim();
   if (!text || !peer) return;
-  const cid = chatId, to = peer.uid;
   inp.value = ''; resize();
+  sendText(chatId, peer.uid, text);
+}
+function sendText(cid, to, text){
   const mref = push(ref(db, 'chats/' + cid));
   set(mref, { from: me.uid, text, ts: serverTimestamp(), status: 'sent' });
   update(ref(db, 'chatMeta/' + cid), { lastText: text.slice(0, 80), lastFrom: me.uid, ts: serverTimestamp(), lastStatus: 'sent' });
@@ -608,19 +661,23 @@ function savePw(pw){
 /* --- lock / unlock --- */
 function unlockChat(){
   locked = false;
+  setInChat(true);
   $('#speed').classList.add('hidden');
   $('#chatRoot').classList.remove('hidden');
   scheduleSeen();
 }
 function lockChat(){
+  if (call) endCall({ reason: 'Call ended' });
+  if (incomingCall) declineCall();
   locked = true;
+  setInChat(false);
   $('#chatRoot').classList.add('hidden');
   $('#speed').classList.remove('hidden');
   $('#spQ').value = '';
 }
 document.querySelectorAll('.lockbtn').forEach(b => b.onclick = lockChat);
 $('#loginBack').onclick = lockChat;
-document.addEventListener('visibilitychange', () => { if (AUTO_LOCK && document.hidden && !locked && me) lockChat(); });
+document.addEventListener('visibilitychange', () => { if (AUTO_LOCK && document.hidden && !locked && me && !call && !incomingCall) lockChat(); });
 
 /* --- search box (opens the chat when the saved password is typed) --- */
 let lpFired = false, lpTimer = null;
@@ -811,6 +868,249 @@ function renderConn(){
 window.addEventListener('online', renderConn); window.addEventListener('offline', renderConn);
 if (navigator.connection) navigator.connection.addEventListener('change', renderConn);
 renderHist(); renderConn();
+
+/* =====================================================================
+   Audio / video calls (WebRTC, signalling through Realtime Database)
+   A call only rings when the other person is inside My Chat (unlocked).
+   ===================================================================== */
+// For harder networks add a TURN server here, e.g.
+// { urls: 'turn:your.turn.server:443', username: '...', credential: '...' }
+const ICE = [{ urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] }];
+
+let call = null, incomingCall = null, ringCtx = null, ringTimer = null, toastT = null;
+const fmtDur = s => Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0');
+function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.remove('hidden'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.add('hidden'), 3800); }
+function setInChat(v){ if (me) update(ref(db, 'users/' + me.uid), { inChat: v }).catch(() => {}); }
+
+/* --- ringtone --- */
+function beep(f, d){
+  try {
+    ringCtx = ringCtx || new (window.AudioContext || window.webkitAudioContext)();
+    if (ringCtx.state === 'suspended') ringCtx.resume();
+    const o = ringCtx.createOscillator(), g = ringCtx.createGain();
+    o.frequency.value = f; g.gain.value = .12; o.connect(g); g.connect(ringCtx.destination);
+    o.start(); o.stop(ringCtx.currentTime + d);
+  } catch {}
+}
+function startRing(incoming){
+  stopRing();
+  const pat = () => {
+    beep(incoming ? 880 : 440, .35); setTimeout(() => beep(incoming ? 660 : 440, .35), 450);
+    if (incoming && navigator.vibrate) navigator.vibrate([300, 150, 300]);
+  };
+  pat(); ringTimer = setInterval(pat, 2500);
+}
+function stopRing(){ clearInterval(ringTimer); ringTimer = null; if (navigator.vibrate) navigator.vibrate(0); }
+
+/* --- call screen --- */
+function showCallUI(mode, type, uid){
+  const u = users[uid] || { uid, name: 'Friend' };
+  const ui = $('#callUI'); ui.dataset.mode = mode; ui.dataset.type = type;
+  $('#clAv').replaceChildren(avatar(u, 110));
+  $('#clName').textContent = u.name || 'Friend';
+  ['#clMute', '#clCam'].forEach(s => $(s).classList.remove('off'));
+  ui.classList.remove('hidden');
+}
+function hideCallUI(){
+  $('#callUI').classList.add('hidden');
+  $('#remoteV').srcObject = null; $('#remoteA').srcObject = null; $('#localV').srcObject = null;
+}
+const setCallStatus = t => { $('#clStatus').textContent = t; };
+function updTimer(){ if (call && call.connectedAt) setCallStatus(fmtDur(Math.round((Date.now() - call.connectedAt) / 1000))); }
+
+/* --- media --- */
+const getMedia = type => navigator.mediaDevices.getUserMedia({
+  audio: { echoCancellation: true, noiseSuppression: true },
+  video: type === 'video' ? { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } : false
+});
+function mediaError(e){
+  const n = e && e.name;
+  toast(n === 'NotAllowedError' ? 'Allow microphone / camera access to use calls.'
+    : n === 'NotFoundError' ? 'No microphone or camera found.' : 'Could not start the call.');
+}
+function attachRemote(){
+  if (!call) return;
+  const el = call.type === 'video' ? $('#remoteV') : $('#remoteA');
+  if (el.srcObject !== call.remote) el.srcObject = call.remote;
+  el.play().catch(() => {});
+}
+
+/* --- peer connection --- */
+async function setupCall(o){
+  const local = await getMedia(o.type);
+  const pc = new RTCPeerConnection({ iceServers: ICE });
+  const remote = new MediaStream();
+  call = { ...o, pc, local, remote, pending: [], unsubs: [], od: [], facing: 'user', connectedAt: 0, remoteSet: false, ended: false };
+  local.getTracks().forEach(t => pc.addTrack(t, local));
+  pc.ontrack = e => { e.track && !remote.getTracks().includes(e.track) && remote.addTrack(e.track); attachRemote(); };
+  pc.onicecandidate = e => { if (e.candidate) push(ref(db, 'calls/' + o.cid + '/cand/' + me.uid), e.candidate.toJSON()); };
+  pc.onconnectionstatechange = onConnState;
+  showCallUI('active', o.type, o.peerUid);
+  if (o.type === 'video'){ $('#localV').srcObject = local; $('#localV').play().catch(() => {}); }
+  setCallStatus(o.role === 'caller' ? 'Calling\u2026' : 'Connecting\u2026');
+}
+function watchCall(){
+  const c = call, base = 'calls/' + c.cid;
+  c.unsubs.push(onChildAdded(ref(db, base + '/cand/' + c.peerUid), s => {
+    const cand = s.val();
+    if (c.pc.remoteDescription) c.pc.addIceCandidate(cand).catch(() => {}); else c.pending.push(cand);
+  }));
+  c.unsubs.push(onValue(ref(db, base + '/status'), s => {
+    const st = s.val(); if (!call || call !== c) return;
+    if (st === 'declined') endCall({ reason: 'Call declined', remote: true });
+    else if (st === 'ended' || st === 'missed') endCall({ reason: 'Call ended', remote: true });
+  }));
+  if (c.role === 'caller'){
+    c.unsubs.push(onValue(ref(db, base + '/answer'), async s => {
+      const a = s.val(); if (!a || c.remoteSet || call !== c) return;
+      c.remoteSet = true;
+      try { await c.pc.setRemoteDescription(a); flushPending(); } catch { endCall({ reason: 'Call failed' }); }
+    }));
+  }
+}
+function flushPending(){ const c = call; if (!c) return; c.pending.splice(0).forEach(x => c.pc.addIceCandidate(x).catch(() => {})); }
+function onConnState(){
+  const c = call; if (!c) return;
+  const s = c.pc.connectionState;
+  if (s === 'connected'){
+    clearTimeout(c.ringT); clearTimeout(c.dcT); stopRing();
+    if (!c.connectedAt){ c.connectedAt = Date.now(); c.tick = setInterval(updTimer, 1000); }
+    updTimer();
+  } else if (s === 'failed'){
+    endCall({ reason: 'Could not connect. Your network may be blocking calls.' });
+  } else if (s === 'disconnected'){
+    clearTimeout(c.dcT);
+    c.dcT = setTimeout(() => { if (call === c && c.pc.connectionState !== 'connected') endCall({ reason: 'Connection lost' }); }, 8000);
+  }
+}
+
+/* --- start a call (caller) --- */
+async function startCall(type){
+  if (call || incomingCall || !peer) return;
+  if (!peer.inChat){ toast((peer.name || 'This person') + ' is not available for a call right now.'); return; }
+  if (!navigator.mediaDevices || !window.RTCPeerConnection){ toast('Calls are not supported in this browser.'); return; }
+  const cid = chatId, to = peer.uid;
+  try { await setupCall({ cid, peerUid: to, type, role: 'caller' }); } catch (e){ mediaError(e); return; }
+  const c = call;
+  try {
+    const offer = await c.pc.createOffer();
+    await set(ref(db, 'calls/' + cid), { from: me.uid, to, type, status: 'ringing', offer: { type: offer.type, sdp: offer.sdp }, ts: serverTimestamp() });
+    watchCall();
+    await c.pc.setLocalDescription(offer);
+    await set(ref(db, 'incoming/' + to), { from: me.uid, chatId: cid, type, ts: serverTimestamp() });
+    c.od.push(onDisconnect(ref(db, 'calls/' + cid + '/status')), onDisconnect(ref(db, 'incoming/' + to)));
+    c.od[0].set('ended'); c.od[1].remove();
+    startRing(false);
+    c.ringT = setTimeout(() => {
+      if (call === c && !c.connectedAt){ update(ref(db, 'calls/' + cid), { status: 'missed' }).catch(() => {}); endCall({ reason: 'No answer', missed: true }); }
+    }, 45000);
+  } catch { if (call === c) endCall({ reason: 'Could not start the call' }); }
+}
+
+/* --- receive a call (callee) --- */
+function initCalls(){
+  onValue(ref(db, 'incoming/' + me.uid), async snap => {
+    const v = snap.val();
+    if (!v){ if (incomingCall) dismissIncoming(true); return; }
+    if (locked || incomingCall) return;
+    if (call){ update(ref(db, 'calls/' + v.chatId), { status: 'declined' }).catch(() => {}); remove(ref(db, 'incoming/' + me.uid)).catch(() => {}); return; }
+    let c = null;
+    try { c = (await get(ref(db, 'calls/' + v.chatId))).val(); } catch {}
+    if (!c || c.status !== 'ringing' || c.to !== me.uid || !c.offer){ remove(ref(db, 'incoming/' + me.uid)).catch(() => {}); return; }
+    if (locked || call || incomingCall) return;
+    const ic = { cid: v.chatId, from: c.from, type: c.type, offer: c.offer };
+    ic.unsub = onValue(ref(db, 'calls/' + ic.cid + '/status'), s => {
+      const st = s.val(); if (st && st !== 'ringing' && incomingCall === ic) dismissIncoming(true);
+    });
+    incomingCall = ic;
+    showCallUI('incoming', ic.type, ic.from);
+    setCallStatus('Incoming ' + (ic.type === 'video' ? 'video' : 'voice') + ' call');
+    startRing(true);
+  });
+}
+function dismissIncoming(missed){
+  const ic = incomingCall; if (!ic) return;
+  stopRing(); ic.unsub && ic.unsub(); incomingCall = null; hideCallUI();
+  if (missed){ const u = users[ic.from]; toast('Missed ' + (ic.type === 'video' ? 'video' : 'voice') + ' call' + (u ? ' from ' + u.name : '')); }
+}
+async function acceptCall(){
+  const ic = incomingCall; if (!ic) return;
+  stopRing(); ic.unsub && ic.unsub(); incomingCall = null;
+  try { await setupCall({ cid: ic.cid, peerUid: ic.from, type: ic.type, role: 'callee' }); }
+  catch (e){
+    mediaError(e); hideCallUI();
+    update(ref(db, 'calls/' + ic.cid), { status: 'declined' }).catch(() => {}); remove(ref(db, 'incoming/' + me.uid)).catch(() => {});
+    return;
+  }
+  const c = call;
+  try {
+    watchCall();
+    await c.pc.setRemoteDescription(ic.offer); c.remoteSet = true; flushPending();
+    const ans = await c.pc.createAnswer(); await c.pc.setLocalDescription(ans);
+    await update(ref(db, 'calls/' + ic.cid), { answer: { type: ans.type, sdp: ans.sdp }, status: 'accepted' });
+    remove(ref(db, 'incoming/' + me.uid)).catch(() => {});
+    const od = onDisconnect(ref(db, 'calls/' + ic.cid + '/status')); c.od.push(od); od.set('ended');
+  } catch { if (call === c) endCall({ reason: 'Could not connect' }); }
+}
+function declineCall(){
+  const ic = incomingCall; if (!ic) return;
+  stopRing(); ic.unsub && ic.unsub(); incomingCall = null; hideCallUI();
+  update(ref(db, 'calls/' + ic.cid), { status: 'declined' }).catch(() => {});
+  remove(ref(db, 'incoming/' + me.uid)).catch(() => {});
+}
+
+/* --- end --- */
+function endCall(o = {}){
+  const c = call; if (!c || c.ended) return;
+  c.ended = true; call = null;
+  clearTimeout(c.ringT); clearTimeout(c.dcT); clearInterval(c.tick); stopRing();
+  c.unsubs.forEach(f => { try { f(); } catch {} });
+  c.od.forEach(d => d.cancel().catch(() => {}));
+  try { c.pc.close(); } catch {}
+  c.local.getTracks().forEach(t => t.stop());
+  const dur = c.connectedAt ? Math.round((Date.now() - c.connectedAt) / 1000) : 0;
+  if (!o.remote) update(ref(db, 'calls/' + c.cid), { status: 'ended' }).catch(() => {});
+  if (c.role === 'caller'){
+    remove(ref(db, 'incoming/' + c.peerUid)).catch(() => {});
+    const label = c.type === 'video' ? 'Video call' : 'Voice call';
+    let txt = null;
+    if (dur > 0) txt = (c.type === 'video' ? '\uD83C\uDFA5 ' : '\uD83D\uDCDE ') + label + ' \u00B7 ' + fmtDur(dur);
+    else if (o.missed) txt = 'Missed ' + label.toLowerCase();
+    else if (o.reason === 'Call declined') txt = 'Call declined';
+    if (txt) sendText(c.cid, c.peerUid, txt);
+  }
+  hideCallUI();
+  if (o.reason && !(o.reason === 'Call ended' && dur > 0 && !o.remote)) toast(o.reason);
+}
+
+/* --- in-call controls --- */
+$('#clAnswer').onclick = acceptCall;
+$('#clDecline').onclick = declineCall;
+$('#clEnd').onclick = () => endCall({ reason: '' });
+$('#clMute').onclick = e => {
+  if (!call) return; const t = call.local.getAudioTracks(); if (!t.length) return;
+  const on = !t[0].enabled; t.forEach(x => x.enabled = on); e.currentTarget.classList.toggle('off', !on);
+};
+$('#clCam').onclick = e => {
+  if (!call) return; const t = call.local.getVideoTracks(); if (!t.length) return;
+  const on = !t[0].enabled; t.forEach(x => x.enabled = on); e.currentTarget.classList.toggle('off', !on);
+};
+$('#clFlip').onclick = async () => {
+  if (!call || call.type !== 'video') return;
+  const c = call, old = c.facing, next = old === 'user' ? 'environment' : 'user';
+  const getCam = f => navigator.mediaDevices.getUserMedia({ video: { facingMode: f } });
+  c.local.getVideoTracks().forEach(t => { t.stop(); c.local.removeTrack(t); });
+  let s;
+  try { s = await getCam(next); c.facing = next; }
+  catch { try { s = await getCam(old); } catch { toast('Could not switch camera.'); return; } }
+  const nt = s.getVideoTracks()[0];
+  const sender = c.pc.getSenders().find(x => x.track && x.track.kind === 'video') || c.pc.getSenders().find(x => !x.track);
+  if (sender) await sender.replaceTrack(nt);
+  c.local.addTrack(nt);
+  const lv = $('#localV'); lv.srcObject = c.local; lv.style.transform = c.facing === 'user' ? 'scaleX(-1)' : 'none'; lv.play().catch(() => {});
+};
+$('#callA').onclick = () => startCall('audio');
+$('#callV').onclick = () => startCall('video');
 </script>
 </body>
 </html>
